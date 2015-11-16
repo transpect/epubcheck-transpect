@@ -7,3 +7,6 @@
 [submodule "calabash"]
 	path = calabash
 	url = https://github.com/transpect/calabash-frontend
+[submodule "schema-html"]
+	path = schema-html
+	url = https://github.com/transpect/schema-html
