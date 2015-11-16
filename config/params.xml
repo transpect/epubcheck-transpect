@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<c:param-set xmlns:c="http://www.w3.org/ns/xproc-step">
+  
+  <c:param name="html-max-kb" value="300"/>
+  <c:param name="image-max-mb" value="1.5"/>
+  <c:param name="result-max-mb" value="20"/>
+  <!-- 1 Mpx = 1e6 px -->
+  <c:param name="image-max-mpx" value="3.2"/>
+  <!-- image-dpi: Will require all images that have density information to report this as XXXdpi,
+    otherwise unc:paramed. Desirable: calculation depending on CSS settings, typical screen sizes, pixel count. -->
+  <c:param name="image-min-dpi" value="300"/>
+  <c:param name="image-max-dpi" value="300"/>
+  <c:param name="cover-min-width-px" value="800"/>
+  <c:param name="cover-max-width-px" value="1440"/>  
+  
+</c:param-set>

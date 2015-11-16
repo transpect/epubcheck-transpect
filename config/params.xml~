@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<c:param-set xmlns:c="http://www.w3.org/ns/xproc-step">
+  <!--  *
+        * global
+        * -->
+  <c:param name="doi-prefix" value="10\.\d{4}"/>
+  <c:param name="doi-suffix" value="[a-zA-Z0-9-\._;\(\)/]+"/>
+  <c:param name="doi-book" value="{$doi-prefix}/{$doi-suffix-book}"/>
+  <c:param name="date-year" value="\d{4}"/>
+  <c:param name="copyright-year" value="{$date-year}"/>
+  <c:param name="pt" value="[b|j]"/>
+  <c:param name="counter" value="([0-9]{2}[1-9][a-z]?)"/>
+  <c:param name="section-information" value="((_s_[0-9]{2}[1-9])+)"/>
+  <c:param name="section-id" value="{$pt}_{$doi-suffix}_{$section-information}" />
+  <c:param name="element-abbr" value="fn|fig|audio|video|tab|ref|box|stat|mn|line|eq" />
+  <c:param name="element-id" value="{$pt}_{$doi-suffix}_{$element-abbr}_{$counter}" />
+  <c:param name="suppl_material-file-name" value="([a-zA-Z0-9\-_\.~]+)" />
+  <!--  *
+        * books
+        * -->
+  <c:param name="book-dtd-regex" value="-//Atypon//DTD\sAtypon\sSystems\sNCBI\sBook\sDTD\sSuite\sv3\.0\.2\s20110228//EN"/>
+  <c:param name="isbn" value="(97[8|9])\d{10}"/>
+  <c:param name="eisbn-pdf" value="{$isbn}"/>
+  <c:param name="eisbn-epub" value="{$isbn}"/>
+  <c:param name="chapter-suffix" value="(([0-9]{3})|fm[1-9]?|prf[1-9]?|toc[1-9]?)"/>
+  <c:param name="book-delivery-id" value="epub_dgo_{$eisbn-pdf}"/>
+  <c:param name="doi-suffix-book" value="{$eisbn-pdf}"/>
+  <c:param name="doi-suffix-book-part" value="{$eisbn-pdf}-{$chapter-suffix}"/>
+  <c:param name="doi-book-part" value="{$doi-prefix}/{$doi-suffix-book-part}"/>
+  <c:param name="book-part-types" value="book-toc-page-order|chapter|contents|frontmatter|part|backmatter"/>
+  <c:param name="contrib-types-regex" value="assistant|author|continued|contributor|corp_editor|editor|editorial_staff|founder|series_editor|translator"/>
+  <c:param name="page" value="^([ivxlcdm]|\d)+$"/>
+  <!--  *
+        * journals
+        * -->
+  <c:param name="article-dtd-regex" value="-//NLM//DTD\sJATS\s\(Z39\.96\)\sJournal\sPublishing\sDTD\sv1\.0\s20120330//EN"/>
+  <c:param name="issue-dtd-regex" value="-//Atypon//DTD\sAtypon\sSystems\sJournal\sArchiving\sand\sInterchange\sNLM\sDTD\sv3\.0\.2\s20101108//EN"/>
+  <c:param name="journal-code" value="[a-z]+"/>
+  <c:param name="journal-code-online" value="([a-z]+|(jjzg-b){1})"/>
+  <c:param name="doi-code" value="([a-z]+)|(jjzg-b){1}|([0-9]+)"/>
+  <c:param name="time-stamp" value="_\d{4}(-\d{2}){2}-(-\d{2}){3}"/>
+  <c:param name="article-system-creation-date-year" value="{$date-year}"/>
+  <c:param name="article-counter-id" value="\d{4}"/>
+  <c:param name="article-delivery-type" value="(ja|aop)"/>
+  <c:param name="article-id" value="{$doi-code}-{$article-system-creation-date-year}-{$article-counter-id}"/>
+  <c:param name="article-delivery-id" value="{$journal-code-online}_{$article-id}_{$article-delivery-type}_{$time-stamp}"/>
+  <c:param name="cover-date-year" value="{$date-year}"/>
+  <c:param name="volume-number" value="([1-9]\d*(-[1-9]\d*)?)|(0{1})"/>
+  <c:param name="issue-number" value="([1-9]\d*(-[1-9]\d*)?)|(s[1-9]\d*(-s[1-9]\d*)?)|(0{1})"/>
+  <c:param name="issue-id" value="{$journal-code-online}\.{$cover-date-year}\.{$volume-number}\.issue-{$issue-number}"/>
+  <c:param name="issue-delivery-id" value="{$journal-code-online}_{$issue-id}_{$time-stamp}"/>
+  <!--  *
+        * transpect system-internal parameters. handle with care, dude. 
+        * -->
+  <c:param name="unzip-dirname" value="archive"/>
+  <c:param name="cascade-path" value="."/>
+  <c:param name="exclude-filter" value="'(css|htmlreports|jats2html|js|sch|xpl|xsl)'"/><!-- expects a regex -->
+  <c:param name="content-base-uri" value="http://this.transpect.io/content-repo/"/>
+  <c:param name="paths-xsl-uri" value="http://this.transpect.io/a9s/common/xsl/sc-paths.xsl"/>
+  <c:param name="clade-role" value="global"/>
+</c:param-set>
