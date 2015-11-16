@@ -1,0 +1,168 @@
+#!/bin/bash
+
+function usage {
+    echo ""
+    echo "     transpect.io "
+    echo "   ___ _ __  _   _| |__   ___| |__   ___  ___| | __  "
+    echo "  / _ \ '_ \| | | | '_ \ / __| '_ \ / _ \/ __| |/ / "
+    echo " |  __/ |_) | |_| | |_) | (__| | | |  __/ (__|   <  "
+    echo "  \___| .__/ \__,_|_.__/ \___|_| |_|\___|\___|_|\_\ "
+    echo "      |_|                                           "
+    echo ""
+    echo "Usage: epubcheck-transpect [options ...] {epub file}"
+    echo ""
+    echo "Options:"
+    echo "   -o {value}  custom output path"
+    echo "   -p {value}  profile"
+    echo "   -s {value}  default warning severity"
+    echo "   -d          switch debug mode on/off"
+    1>&2; exit 1;
+}
+function exitonerror {
+    echo "errors encountered while $2. exited with code $1"
+    exit 1
+}
+# readlink -f is unavailable on Mac OS X
+function real_dir() {
+    SOURCE="$1"
+    while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+	DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+	SOURCE="$(readlink "$SOURCE")"
+	[[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to \
+	resolve it relative to the path where the symlink file was located
+    done
+    echo "$( cd -P "$( dirname "$SOURCE" )" && pwd  )"
+}
+
+# cygwin check
+cygwin=false;
+case "`uname`" in
+    CYGWIN*) cygwin=true;
+esac
+
+# defaults
+PWD="$( pwd)"
+DIR="$( real_dir "${BASH_SOURCE[0]}" )"
+CALABASH=$DIR/calabash/calabash.sh
+TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
+SEVERITY=error
+
+# specify options
+while getopts "o:p:s:d" opt; do
+    case "${opt}" in
+	o)
+	    OUT_DIR=${OPTARG}
+	    ;;
+	p)
+	    PHASE=${OPTARG}
+	    ;;
+	s)
+	    SEVERITY=${OPTARG}
+	    ;;
+	d)
+	    DEBUG=yes
+	    ;;
+	\?)
+	    echo "Invalid option: -$OPTARG" >&2
+	    usage
+	    ;;
+	:)
+	    echo "Option -$OPTARG requires an argument." >&2
+	    usage
+	    ;;
+    esac
+done
+shift $((OPTIND-1))
+# check if argument for file is set
+if [ -z $1 ]; then
+    usage
+fi
+
+# file as 1st argument
+FILE="$1"
+
+# basename
+BASENAME="$(basename $FILE .epub)"
+
+# output directory
+if [ -z $OUT_DIR ]; then
+    OUT_DIR="$(real_dir "$FILE" )"/$BASENAME
+fi
+
+# temp dir
+TMP_DIR=$OUT_DIR/$BASENAME.tmp
+
+# debugging
+DEBUG_DIR=$TMP_DIR/debug/
+
+# set log
+LOG=$TMP_DIR/$BASENAME.log
+
+# remove log from previous runs
+if [ -e $LOG ]; then
+    rm $LOG
+fi
+
+# create dirs
+if [ -d "$OUT_DIR" ]; then
+    echo "clean $OUT_DIR"
+    rm -rf $OUT_DIR
+fi
+mkdir -p $OUT_DIR $TMP_DIR $DEBUG_DIR $DEBUG_DIR/status || exitonerror $? "create directories"
+
+echo "start epubcheck-transpect" >> $LOG
+
+# copy file into temp dir
+FILE_CP=$TMP_DIR/$(basename $FILE)
+cp $FILE $TMP_DIR 2>&1 2>>$LOG || exitonerror $? "copy file into temp dir"
+
+# make absolute paths
+if $cygwin; then
+    FILE_CP=$(cygpath -ma "$FILE_CP")
+    DIR=$(cygpath -ma "$DIR")
+    if [ -n "$META" ]; then
+	META=$(cygpath -ma "$META")
+    fi
+    OUT_DIR=$(cygpath -ma "$OUT_DIR")    
+    DEBUG_DIR_URI=file:/$(cygpath -ma "$DEBUG_DIR" )
+else
+    if [ -n "$META" ]; then
+	META=file:$(readlink -f $META)
+    fi
+    FILE_CP_URI=file:$(readlink -f $FILE_CP)
+    DEBUG_DIR_URI=$DEBUG_DIR
+fi
+
+# check if file exists
+if [ ! -f $FILE ]; then
+    exitonerror 2 "opening $FILE"
+fi
+
+echo "initialize epubcheck-transpect"
+
+if [ "$DEBUG" = "yes" ]; then
+    echo "debug mode: $DEBUG"
+    echo "storing debug files to $DEBUG_DIR_URI"
+    echo "profile: $PHASE"
+    echo "severity: $SEVERITY"
+fi
+
+echo invoke epubcheck-transpect > $DEBUG_DIR/status/00_epubcheck-transpect_start.txt
+
+cd $DIR && $CALABASH \
+    -i params=$DIR/config/params.xml \
+    -o result=$OUT_DIR/$BASENAME.xml \
+    $DIR/xpl/epubcheck-transpect.xpl \
+    file=$FILE_CP \
+    htmlreport=$OUT_DIR/$BASENAME.xhtml \
+    phase=$PHASE \
+    severity-default-name=$SEVERITY \
+    debug=$DEBUG \
+    debug-dir-uri=$DEBUG_DIR_URI \
+    status-dir-uri=$DEBUG_DIR_URI/status #2>&1 2>>$LOG \
+    #&& echo "output written to $OUT_DIR/$BASENAME.xml" \
+    #|| exitonerror $? "running sc-main"
+
+echo epubcheck-transpect finished > $DEBUG_DIR/status/99_epubcheck-transpect_finished.txt
+
+echo "epubcheck-transpect finished"
