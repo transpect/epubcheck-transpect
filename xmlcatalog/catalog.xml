@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  
+  <rewriteURI uriStartString="http://transpect.io/epubcheck-transpect/" rewritePrefix="../"/>
+  
+  <nextCatalog catalog="../xproc-util/xmlcatalog/catalog.xml"/>
+  <nextCatalog catalog="../xslt-util/xmlcatalog/catalog.xml"/>
+  
+</catalog>
