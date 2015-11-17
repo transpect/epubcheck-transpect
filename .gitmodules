@@ -13,3 +13,6 @@
 [submodule "css-tools"]
 	path = css-tools
 	url = https://github.com/transpect/css-tools
+[submodule "htmlreports"]
+	path = htmlreports
+	url = https://github.com/transpect/htmlreports
