@@ -16,3 +16,6 @@
 [submodule "htmlreports"]
 	path = htmlreports
 	url = https://github.com/transpect/htmlreports
+[submodule "cascade"]
+	path = cascade
+	url = https://github.com/transpect/cascade
