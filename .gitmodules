@@ -19,3 +19,6 @@
 [submodule "cascade"]
 	path = cascade
 	url = https://github.com/transpect/cascade
+[submodule "epubtools"]
+	path = epubtools
+	url = https://github.com/transpect/epubtools
