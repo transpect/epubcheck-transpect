@@ -3,6 +3,7 @@
   
   <rewriteURI uriStartString="http://transpect.io/epubcheck-transpect/" rewritePrefix="../"/>
 
+  <nextCatalog catalog="../css-tools/xmlcatalog/catalog.xml"/>
   <nextCatalog catalog="../schema-html/xmlcatalog/catalog.xml"/>
   <nextCatalog catalog="../xproc-util/xmlcatalog/catalog.xml"/>
   <nextCatalog catalog="../xslt-util/xmlcatalog/catalog.xml"/>
