@@ -101,6 +101,7 @@
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl"/>
   
   <p:import href="epubcheck-file-iteration.xpl"/>
+  <!--<p:import href="epubcheck-validate.xpl"/>-->
   
   <tr:store-debug pipeline-step="epubcheck-transpect/param-set-original">
     <p:with-option name="active" select="$debug"/>
@@ -143,25 +144,13 @@
     <p:with-option name="status-dir-uri" select="$status-dir-uri"/>
   </epubcheck:file-iteration>
   
-  <!--  *
-        * the subsequent steps apply both for metadata extraction 
-        * and EPUB checking. Report HTML and XML is generated.
-        * -->
-  
-  
-  
-  <!--<sc:htmlreports name="htmlreports">
-    <p:input port="reports">
-      <p:pipe port="report" step="get-identifiers-or-validate"/>
-    </p:input>
+  <!--<epubcheck:validate name="validate">
     <p:input port="params">
-      <p:pipe port="params" step="get-identifiers-or-validate"/>
+      <p:pipe port="result" step="resolve-params"/>
     </p:input>
-    <p:with-option name="severity-default-name" select="$severity-default-name"/>
-    <p:with-option name="htmlreport" select="$htmlreport"/>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
-    <p:with-option name="status-dir-uri" select="$status-dir-uri"/>            
-  </sc:htmlreports>-->
+    <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
+  </epubcheck:validate>-->
   
 </p:declare-step>
