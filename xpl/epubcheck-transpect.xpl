@@ -35,9 +35,14 @@
         * -->
   <p:documentation xmlns="http://www.w3.org/1999/xhtml"><h2>Ports</h2></p:documentation>
   
-  <p:input port="params">
+  <p:input port="params" primary="true">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
       <dl><dt>params</dt><dd>expects a c:param-set document</dd></dl></p:documentation>
+  </p:input>
+  
+  <p:input port="schematron" primary="false" sequence="true">
+    <p:documentation xmlns="http://www.w3.org/1999/xhtml">
+      <dl><dt>schematron</dt><dd>expects a schematron document</dd></dl></p:documentation>
   </p:input>
   
   <p:output port="result">
@@ -147,6 +152,9 @@
   <epubcheck:validate name="validate">
     <p:input port="params">
       <p:pipe port="result" step="resolve-params"/>
+    </p:input>
+    <p:input port="schematron">
+      <p:pipe port="schematron" step="epubcheck-transpect"/>
     </p:input>
     <p:with-option name="file" select="/c:result/@os-path">
       <p:pipe port="result" step="normalize-filename"/>
