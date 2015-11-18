@@ -95,7 +95,6 @@
         * import xproc modules
         * -->
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl"/>
-  <p:import href="http://transpect.io/epubcheck-idpf/xpl/epubcheck.xpl"/>
   <p:import href="http://transpect.io/xproc-util/file-uri/xpl/file-uri.xpl"/>
   <p:import href="http://transpect.io/xproc-util/resolve-params/xpl/resolve-params.xpl"/>
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl"/>
@@ -132,17 +131,6 @@
   <cx:message>
     <p:with-option name="message" select="'[info] normalize filename: ', /c:result/@os-path"/>
   </cx:message>
-
-  <cx:message>
-    <p:with-option name="message" select="'[info] check file with IDPF epubcheck'"/>
-  </cx:message>
-  
-  <tr:epubcheck-idpf name="epubcheck-idpf" cx:depends-on="normalize-filename">
-    <p:with-option name="epubfile-path" select="/c:result/@os-path"/>
-    <p:with-option name="debug" select="$debug"/>
-    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
-    <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
-  </tr:epubcheck-idpf>
   
   <epubcheck:file-iteration name="file-iteration">
     <p:input port="params">
@@ -160,6 +148,9 @@
     <p:input port="params">
       <p:pipe port="result" step="resolve-params"/>
     </p:input>
+    <p:with-option name="file" select="/c:result/@os-path">
+      <p:pipe port="result" step="normalize-filename"/>
+    </p:with-option>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
@@ -168,7 +159,6 @@
   <epubcheck:htmlreport name="report">
     <p:input port="reports">
       <p:pipe port="report" step="validate"/>
-      <p:pipe port="result" step="epubcheck-idpf"/>
     </p:input>
     <p:input port="params">
       <p:pipe port="result" step="resolve-params"/>

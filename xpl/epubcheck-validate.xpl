@@ -15,15 +15,17 @@
   <p:output port="result" primary="true">
     <p:pipe port="result" step="epubtools-schematron"/>
   </p:output>
-  <p:output port="report" primary="false">
+  <p:output port="report" primary="false" sequence="true">
     <p:pipe port="result" step="schematron-debug"/>
+    <p:pipe port="result" step="epubcheck-idpf"/>
   </p:output>
   
+  <p:option name="file" required="true"/>
   <p:option name="debug" select="'yes'"/>
   <p:option name="debug-dir-uri" select="'debug'"/>  
   <p:option name="status-dir-uri" select="concat($debug-dir-uri, '/status')"/>
   
-  <p:import href="http://transpect.io/htmlreports/xpl/validate-with-schematron.xpl"/>
+  <p:import href="http://transpect.io/epubcheck-idpf/xpl/epubcheck.xpl"/>
   <p:import href="http://transpect.io/schematron/xpl/oxy-schematron.xpl"/>
   <p:import href="http://transpect.io/xproc-util/insert-srcpaths/xpl/insert-srcpaths.xpl"/>
   
@@ -62,5 +64,20 @@
     <p:with-option name="active" select="$debug"/>
     <p:with-option name="base-uri" select="$debug-dir-uri"/>
   </tr:store-debug>
+  
+  <cx:message>
+    <p:with-option name="message" select="'[info] check file with IDPF epubcheck'"/>
+  </cx:message>
+  
+  <p:sink/>
+  
+  <tr:epubcheck-idpf name="epubcheck-idpf">
+    <p:with-option name="epubfile-path" select="$file"/>
+    <p:with-option name="debug" select="$debug"/>
+    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
+  </tr:epubcheck-idpf>
+  
+  <p:sink/>
   
 </p:declare-step>

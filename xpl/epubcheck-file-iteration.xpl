@@ -102,15 +102,30 @@
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
-            
+        
+        <!-- generate OPF file representation -->
+        
+        <p:xslt name="generate-opf-file-representation">
+          <p:input port="stylesheet">
+            <p:document href="../xsl/epubcheck-opf-file-representation.xsl"/>
+          </p:input>
+          <p:input port="parameters">
+            <p:empty/>
+          </p:input>
+        </p:xslt>
+        
         <!-- load NCX file if exists -->
           
-        <cx:message>
-          <p:with-option name="message" select="'[info] load NCX if exists: ', /*:package/*:manifest/*:item[@media-type eq 'application/x-dtbncx+xml']/@full-path"/>
+        <cx:message cx:depends-on="load-opf">
+          <p:with-option name="message" select="'[info] load NCX if exists: ', /*:package/*:manifest/*:item[@media-type eq 'application/x-dtbncx+xml']/@full-path">
+            <p:pipe port="result" step="load-opf"/>
+          </p:with-option>
         </cx:message>
         
         <tr:load fail-on-error="false" name="load-ncx">
-          <p:with-option name="href" select="replace(concat($base-uri, /*:package/*:manifest/*:item[@media-type eq 'application/x-dtbncx+xml']/@href), '%2F', '/')"/>
+          <p:with-option name="href" select="replace(concat($base-uri, /*:package/*:manifest/*:item[@media-type eq 'application/x-dtbncx+xml']/@href), '%2F', '/')">
+            <p:pipe port="result" step="load-opf"/>
+          </p:with-option>
         </tr:load>
         
         <tr:store-debug pipeline-step="epubcheck-transpect/ncx">
@@ -167,6 +182,7 @@
           </p:input>
           <p:input port="insertion">
             <p:pipe port="result" step="load-opf"/>
+            <p:pipe port="result" step="generate-opf-file-representation"/>
             <p:pipe port="result" step="wrap-chunks"/>
             <p:pipe port="result" step="load-ncx"/>
             <p:pipe port="result" step="unzip"/>
