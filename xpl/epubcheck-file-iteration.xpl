@@ -162,7 +162,7 @@
           </epubcheck:load-html>
           
           <tr:store-debug>
-            <p:with-option name="pipeline-step" select="concat('epubcheck-file-iteration/', replace($content-href, '^.+/(.+)$', '$1'))"/>
+            <p:with-option name="pipeline-step" select="concat('epubcheck-file-iteration/content__', replace($content-href, '^.+/(.+)$', '$1'))"/>
             <p:with-option name="active" select="$debug"/>
             <p:with-option name="base-uri" select="$debug-dir-uri"/>
           </tr:store-debug>
