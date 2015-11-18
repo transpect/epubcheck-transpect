@@ -10,7 +10,7 @@
   
   <xsl:template match="/">
     <cx:document name="wrap-data-uris">
-      <xsl:apply-templates select="opf/manifest/item"/>
+      <xsl:apply-templates select="package/manifest/item"/>
     </cx:document>
   </xsl:template>
   
