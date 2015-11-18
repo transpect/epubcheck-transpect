@@ -25,3 +25,6 @@
 [submodule "schematron"]
 	path = schematron
 	url = https://github.com/transpect/schematron
+[submodule "epubcheck-idpf"]
+	path = epubcheck-idpf
+	url = https://github.com/transpect/epubcheck-idpf
