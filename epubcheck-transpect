@@ -151,7 +151,7 @@ echo invoke epubcheck-transpect > $DEBUG_DIR/status/00_epubcheck-transpect_start
 
 cd $DIR && $CALABASH \
     -i params=$DIR/config/params.xml \
-    -o result=$OUT_DIR/$BASENAME.xml \
+    -o result=$OUT_DIR/$BASENAME.xhtml \
     $DIR/xpl/epubcheck-transpect.xpl \
     file=$FILE_CP \
     htmlreport=$OUT_DIR/$BASENAME.xhtml \
