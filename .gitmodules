@@ -28,3 +28,6 @@
 [submodule "epubcheck-idpf"]
 	path = epubcheck-idpf
 	url = https://github.com/transpect/epubcheck-idpf
+[submodule "kindlegen-amzn"]
+	path = kindlegen-amzn
+	url = https://github.com/transpect/kindlegen-amzn
