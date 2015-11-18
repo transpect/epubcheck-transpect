@@ -74,4 +74,6 @@
     <p:with-option name="status-dir-uri" select="$status-dir-uri"/>
   </tr:patch-svrl>
   
+  <p:delete match="@srcpath"/>
+  
 </p:declare-step>
