@@ -18,6 +18,7 @@
   <p:output port="report" primary="false" sequence="true">
     <p:pipe port="result" step="schematron-debug"/>
     <p:pipe port="result" step="epubcheck-idpf"/>
+    <p:pipe port="report" step="kindlegen"/>
   </p:output>
   
   <p:option name="file" required="true"/>
@@ -26,6 +27,7 @@
   <p:option name="status-dir-uri" select="concat($debug-dir-uri, '/status')"/>
   
   <p:import href="http://transpect.io/epubcheck-idpf/xpl/epubcheck.xpl"/>
+  <p:import href="http://transpect.io/kindlegen/xpl/kindlegen.xpl"/>
   <p:import href="http://transpect.io/schematron/xpl/oxy-schematron.xpl"/>
   <p:import href="http://transpect.io/xproc-util/insert-srcpaths/xpl/insert-srcpaths.xpl"/>
   
@@ -77,6 +79,15 @@
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
   </tr:epubcheck-idpf>
+  
+  <p:sink/>
+  
+  <tr:kindlegen name="kindlegen" cx:depends-on="epubcheck-idpf">
+    <p:with-option name="epub" select="$file"/>
+    <p:with-option name="debug" select="$debug"/>
+    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-option name="status-dir-uri" select="$status-dir-uri"/>
+  </tr:kindlegen>
   
   <p:sink/>
   
