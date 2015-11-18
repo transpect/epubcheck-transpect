@@ -17,7 +17,7 @@
       <xsl:copy-of select="/c:wrap/cx:document[@name eq 'wrap-chunks']/html[1]/@*"/>
       <head>
         <xsl:copy-of select="/c:wrap/cx:document[@name eq 'wrap-chunks']/html[1]/head/*" copy-namespaces="no"/>
-        <link rel="stylesheet" type="text/css" href="http://transpect.io/epubcheck-transpect/css/stylesheet.css"/>
+        <link rel="stylesheet" type="text/css" href="{resolve-uri('../css/stylesheet.css', base-uri())}"/>
       </head>
       <body>
         <xsl:apply-templates select="/c:wrap/cx:document[@name eq 'wrap-chunks']/html/body"/>  
