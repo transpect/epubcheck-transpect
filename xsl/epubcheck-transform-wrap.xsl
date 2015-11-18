@@ -37,7 +37,7 @@
   
   <!-- finally, there is only one html document, so we must fix the hyper references -->
   
-  <xsl:template match="/c:wrap/cx:document[@name eq 'wrap-chunks']/html/body//a[@href]" priority="10">
+  <xsl:template match="/c:wrap/cx:document[@name eq 'wrap-chunks']/html/body//a[@href][not(matches(@href, '^(https?:|mailto:)'))]" priority="10">
     <xsl:copy copy-namespaces="no">
       <xsl:variable name="href" select="@href" as="attribute(href)"/>
       <xsl:variable name="href-uri" 
