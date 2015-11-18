@@ -21,7 +21,6 @@
   <p:option name="debug-dir-uri" select="'debug'"/>  
   <p:option name="status-dir-uri" select="concat($debug-dir-uri, '/status')"/>
   
-  <p:import href="http://transpect.io/calabash-extensions/image-props-extension/image-identify-declaration.xpl"/>
   <p:import href="http://transpect.io/css-tools/xpl/css.xpl"/>
   <p:import href="http://transpect.io/xproc-util/load/xpl/load.xpl"/>
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl"/>
@@ -56,26 +55,6 @@
         <p:with-option name="debug" select="$debug"/>
         <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
       </css:expand>
-      
-      <!-- analyze images -->
-      
-      <p:viewport match="//html:img" name="viewport">
-        
-        <cx:message>
-          <p:with-option name="message" select="'[info] analyze image: ', html:img/@src"/>
-        </cx:message>
-        
-        <tr:image-identify name="image-identify">
-          <p:with-option name="href" select="resolve-uri(html:img/@src, base-uri())"/>
-        </tr:image-identify>
-        
-        <p:insert match="html:img" position="first-child">
-          <p:input port="insertion">
-            <p:pipe port="report" step="image-identify"/>
-          </p:input>
-        </p:insert>
-        
-      </p:viewport>
       
     </p:group>
     <p:catch name="catch">

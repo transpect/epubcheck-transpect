@@ -21,6 +21,7 @@
   <p:option name="debug-dir-uri" select="'debug'"/>  
   <p:option name="status-dir-uri" select="concat($debug-dir-uri, '/status')"/>
   
+  <p:import href="http://transpect.io/calabash-extensions/image-props-extension/image-identify-declaration.xpl"/>
   <p:import href="http://transpect.io/calabash-extensions/unzip-extension/unzip-declaration.xpl"/>
   <p:import href="http://transpect.io/xproc-util/file-uri/xpl/file-uri.xpl"/>
   <p:import href="http://transpect.io/xproc-util/load/xpl/load.xpl"/>
@@ -114,6 +115,24 @@
           </p:input>
         </p:xslt>
         
+        <p:viewport match="//c:file[@href][matches(@href, '(jpg|png|svg)$', 'i')]" name="image-viewport">
+          
+          <cx:message>
+            <p:with-option name="message" select="'[info] analyze image: ', c:file/@oebps-name"/>
+          </cx:message>
+          
+          <tr:image-identify name="image-identify">
+            <p:with-option name="href" select="c:file/@href"/>
+          </tr:image-identify>
+          
+          <p:insert match="c:file" position="first-child">
+            <p:input port="insertion">
+              <p:pipe port="report" step="image-identify"/>
+            </p:input>
+          </p:insert>
+          
+        </p:viewport>
+        
         <!-- load NCX file if exists -->
           
         <cx:message cx:depends-on="load-opf">
@@ -188,7 +207,7 @@
           </p:input>
           <p:input port="insertion">
             <p:pipe port="result" step="load-opf"/>
-            <p:pipe port="result" step="generate-opf-file-representation"/>
+            <p:pipe port="result" step="image-viewport"/>
             <p:pipe port="result" step="wrap-chunks"/>
             <p:pipe port="result" step="load-ncx"/>
             <p:pipe port="result" step="unzip"/>
