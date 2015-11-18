@@ -88,6 +88,10 @@
         </p:input>
       </p:identity>
       
+      <cx:message>
+        <p:with-option name="message" select="'[ERROR] Could not load HTML file'"/>
+      </cx:message>
+      
       <p:add-attribute attribute-name="tr:step-name" attribute-value="load-html" match="/c:errors"/>
 
       <p:add-attribute attribute-name="tr:rule-family" attribute-value="load-html" match="/c:errors" name="forward-error"/>

@@ -60,7 +60,7 @@
         <p:with-option name="overwrite" select="'yes'"/>
       </tr:unzip>
       
-      <tr:store-debug pipeline-step="epubcheck-transpect/archive">
+      <tr:store-debug pipeline-step="epubcheck-file-iteration/archive">
         <p:with-option name="active" select="$debug"/>
         <p:with-option name="base-uri" select="$debug-dir-uri"/>
       </tr:store-debug>
@@ -83,7 +83,7 @@
           <p:with-option name="href" select="replace(concat($base-uri, $container-xml), '%2F', '/')"/>
         </tr:load>
         
-        <tr:store-debug pipeline-step="epubcheck-transpect/archive_container-xml">
+        <tr:store-debug pipeline-step="epubcheck-file-iteration/archive_container-xml">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
@@ -98,7 +98,7 @@
           <p:with-option name="href" select="replace(concat($base-uri, /*:container/*:rootfiles[1]/*:rootfile[1]/@full-path), '%2F', '/')"/>
         </tr:load>
         
-        <tr:store-debug pipeline-step="epubcheck-transpect/opf">
+        <tr:store-debug pipeline-step="epubcheck-file-iteration/opf">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
@@ -128,7 +128,7 @@
           </p:with-option>
         </tr:load>
         
-        <tr:store-debug pipeline-step="epubcheck-transpect/ncx">
+        <tr:store-debug pipeline-step="epubcheck-file-iteration/ncx">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
@@ -161,13 +161,19 @@
             <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
           </epubcheck:load-html>
           
+          <tr:store-debug>
+            <p:with-option name="pipeline-step" select="concat('epubcheck-file-iteration/', replace($content-href, '^.+/(.+)$', '$1'))"/>
+            <p:with-option name="active" select="$debug"/>
+            <p:with-option name="base-uri" select="$debug-dir-uri"/>
+          </tr:store-debug>
+          
         </p:for-each>
         
         <p:wrap-sequence wrapper="document" wrapper-prefix="cx" wrapper-namespace="http://xmlcalabash.com/ns/extensions"/>
         
         <p:add-attribute match="/cx:document" attribute-name="name" attribute-value="wrap-chunks" name="wrap-chunks"/>
         
-        <tr:store-debug pipeline-step="epubcheck-transpect/html-chunks">
+        <tr:store-debug pipeline-step="epubcheck-file-iteration/html-chunks">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
@@ -191,7 +197,7 @@
         
         <p:rename match="/c:wrap/c:files" new-name="c:zipfile"/>
         
-        <tr:store-debug pipeline-step="epubcheck-transpect/wrap">
+        <tr:store-debug pipeline-step="epubcheck-file-iteration/wrap">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
@@ -210,6 +216,10 @@
           <p:pipe port="error" step="catch"/>
         </p:input>
       </p:identity>
+      
+      <cx:message>
+        <p:with-option name="message" select="'[ERROR] EPUB file iteration failed!', /c:errors"/>
+      </cx:message>
       
       <p:add-attribute attribute-name="tr:step-name" attribute-value="file-load" match="/c:errors"/>
       
