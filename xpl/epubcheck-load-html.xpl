@@ -11,7 +11,10 @@
   type="epubcheck:load-html">
   
   <p:input port="source"/>
-  <p:output port="result"/>
+  <p:output port="result" primary="true"/>
+  <p:output port="report" primary="false">
+    <p:pipe port="report" step="try"/>
+  </p:output>
   
   <p:option name="href" required="true"/>
   <p:option name="debug" select="'yes'"/>
@@ -27,42 +30,70 @@
     <p:with-option name="message" select="'[info] load content-file: ', $href"/>
   </cx:message>
   
-  <tr:load fail-on-error="false" name="load-content-files">
-    <p:with-option name="href" select="$href"/>
-  </tr:load>
+  <p:try name="try">
+    <p:group>
+      <p:output port="result" primary="true"/>
+      <p:output port="report" primary="false">
+        <p:inline>
+          <c:result>ok</c:result>
+        </p:inline>
+      </p:output>
+      
+      <tr:load fail-on-error="true" name="load-content-files">
+        <p:with-option name="href" select="$href"/>
+      </tr:load>
+      
+      <cx:message>
+        <p:with-option name="message" select="'[info] parse CSS files: ', //html:link[@type eq 'text/css']/@href"/>
+      </cx:message>
+      
+      <!-- expand internal and external css resources as XML attributes -->
+      
+      <css:expand name="expand">
+        <p:input port="stylesheet">
+          <p:document href="http://transpect.io/css-tools/xsl/css-parser.xsl"/>
+        </p:input>
+        <p:with-option name="debug" select="$debug"/>
+        <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+      </css:expand>
+      
+      <!-- analyze images -->
+      
+      <p:viewport match="//html:img" name="viewport">
+        
+        <cx:message>
+          <p:with-option name="message" select="'[info] analyze image: ', html:img/@src"/>
+        </cx:message>
+        
+        <tr:image-identify name="image-identify">
+          <p:with-option name="href" select="resolve-uri(html:img/@src, base-uri())"/>
+        </tr:image-identify>
+        
+        <p:insert match="html:img" position="first-child">
+          <p:input port="insertion">
+            <p:pipe port="report" step="image-identify"/>
+          </p:input>
+        </p:insert>
+        
+      </p:viewport>
+      
+    </p:group>
+    <p:catch name="catch">
+      <p:output port="result" primary="true"/>
+      <p:output port="report" primary="false"/>
+      
+      <p:identity>
+        <p:input port="source">
+          <p:pipe port="error" step="catch"/>
+        </p:input>
+      </p:identity>
+      
+      <p:add-attribute attribute-name="tr:step-name" attribute-value="load-html" match="/c:errors"/>
+
+      <p:add-attribute attribute-name="tr:rule-family" attribute-value="load-html" match="/c:errors" name="forward-error"/>
+      
+    </p:catch>
   
-  <cx:message>
-    <p:with-option name="message" select="'[info] parse CSS files: ', //html:link[@type eq 'text/css']/@href"/>
-  </cx:message>
-  
-  <!-- expand internal and external css resources as XML attributes -->
-  
-  <css:expand name="expand">
-    <p:input port="stylesheet">
-      <p:document href="http://transpect.io/css-tools/xsl/css-parser.xsl"/>
-    </p:input>
-    <p:with-option name="debug" select="$debug"/>
-    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
-  </css:expand>
-  
-  <!-- analyze images -->
-  
-  <p:viewport match="//html:img" name="viewport">
-    
-    <cx:message>
-      <p:with-option name="message" select="'[info] analyze image: ', html:img/@src"/>
-    </cx:message>
-    
-    <tr:image-identify name="image-identify">
-      <p:with-option name="href" select="resolve-uri(html:img/@src, base-uri())"/>
-    </tr:image-identify>
-    
-    <p:insert match="html:img" position="first-child">
-      <p:input port="insertion">
-        <p:pipe port="report" step="image-identify"/>
-      </p:input>
-    </p:insert>
-    
-  </p:viewport>
+  </p:try>
   
 </p:declare-step>

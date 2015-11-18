@@ -11,7 +11,10 @@
   <p:input port="source" primary="true"/>
   <p:input port="params" primary="false"/>
   
-  <p:output port="result"/>
+  <p:output port="result" primary="true"/>
+  <p:output port="report" primary="false" sequence="true">
+    <p:pipe port="report" step="try"/>
+  </p:output>
   
   <p:option name="file" required="true"/>
   <p:option name="debug" select="'yes'"/>
@@ -26,8 +29,13 @@
   
   <p:import href="epubcheck-load-html.xpl"/>
   
-  <p:try>
+  <p:try name="try">
     <p:group>
+      <p:output port="result" primary="true"/>
+      <p:output port="report" primary="false" sequence="true">
+        <p:pipe port="report" step="content-file-iteration-group"/>
+      </p:output>
+      
       <p:variable name="dest-dir" select="concat(replace($file, '^(.+)/.+$', '$1/'), 'archive')"/>
       
       <tr:simple-progress-msg file="epubcheck-transpect_extract.txt">
@@ -57,7 +65,11 @@
         <p:with-option name="base-uri" select="$debug-dir-uri"/>
       </tr:store-debug>
       
-      <p:group>
+      <p:group name="content-file-iteration-group">
+        <p:output port="result" primary="true"/>
+        <p:output port="report" primary="false" sequence="true">
+          <p:pipe port="report" step="content-file-iteration"/>
+        </p:output>
         <p:variable name="base-uri" select="/c:files/@xml:base"/>
         <p:variable name="container-xml" select="/c:files/c:file[@name eq 'META-INF/container.xml']/@name"/>
         
@@ -90,92 +102,102 @@
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
-                
-        <p:group>
+            
+        <!-- load NCX file if exists -->
+          
+        <cx:message>
+          <p:with-option name="message" select="'[info] load NCX if exists: ', /*:package/*:manifest/*:item[@media-type eq 'application/x-dtbncx+xml']/@full-path"/>
+        </cx:message>
+        
+        <tr:load fail-on-error="false" name="load-ncx">
+          <p:with-option name="href" select="replace(concat($base-uri, /*:package/*:manifest/*:item[@media-type eq 'application/x-dtbncx+xml']/@href), '%2F', '/')"/>
+        </tr:load>
+        
+        <tr:store-debug pipeline-step="epubcheck-transpect/ncx">
+          <p:with-option name="active" select="$debug"/>
+          <p:with-option name="base-uri" select="$debug-dir-uri"/>
+        </tr:store-debug>
+        
+        <!-- load HTML content documents -->
+      
+        <p:for-each name="content-file-iteration">
+          <p:output port="result" primary="true" sequence="true"/>
+          <p:output port="report" primary="false" sequence="true">
+            <p:pipe port="report" step="load-html"/>
+          </p:output>
+          
+          <p:iteration-source select="/*:package/*:spine/*:itemref">
+            <p:pipe port="result" step="load-opf"/>
+          </p:iteration-source>
           <p:variable name="opf-href" select="/*/@xml:base">
             <p:pipe port="result" step="load-opf"/>
           </p:variable>
-            
-          <!-- load NCX file if exists -->
-            
-          <cx:message>
-            <p:with-option name="message" select="'[info] load NCX if exists: ', /*:package/*:manifest/*:item[@media-type eq 'application/x-dtbncx+xml']/@full-path"/>
-          </cx:message>
+          <p:variable name="itemref-id" select="*:itemref/@idref"/>
+          <p:variable name="content-href" select="replace(concat(replace($opf-href, '^(.+/).+$', '$1'), /*:package/*:manifest/*:item[@id eq $itemref-id]/@href), '%2F', '/')">
+            <p:pipe port="result" step="load-opf"/>
+          </p:variable>
           
-          <tr:load fail-on-error="false" name="load-ncx">
-            <p:with-option name="href" select="replace(concat($base-uri, /*:package/*:manifest/*:item[@media-type eq 'application/x-dtbncx+xml']/@href), '%2F', '/')"/>
-          </tr:load>
+          <!-- load html files, expand CSS and analyze images -->
           
-          <tr:store-debug pipeline-step="epubcheck-transpect/ncx">
-            <p:with-option name="active" select="$debug"/>
-            <p:with-option name="base-uri" select="$debug-dir-uri"/>
-          </tr:store-debug>
+          <epubcheck:load-html name="load-html">
+            <p:with-option name="href" select="$content-href"/>
+            <p:with-option name="debug" select="$debug"/>
+            <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+            <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
+          </epubcheck:load-html>
           
-          <!-- load HTML content documents -->
+        </p:for-each>
         
-          <p:for-each name="content-file-iteration">
-            <p:iteration-source select="/*:package/*:spine/*:itemref">
-              <p:pipe port="result" step="load-opf"/>
-            </p:iteration-source>
-            <p:variable name="itemref-id" select="*:itemref/@idref"/>
-            <p:variable name="content-href" select="replace(concat(replace($opf-href, '^(.+/).+$', '$1'), /*:package/*:manifest/*:item[@id eq $itemref-id]/@href), '%2F', '/')">
-              <p:pipe port="result" step="load-opf"/>
-            </p:variable>
-            
-            <!-- load html files, expand CSS and analyze images -->
-            
-            <epubcheck:load-html>
-              <p:with-option name="href" select="$content-href"/>
-              <p:with-option name="debug" select="$debug"/>
-              <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
-              <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
-            </epubcheck:load-html>
-            
-          </p:for-each>
-          
-          <p:wrap-sequence wrapper="document" wrapper-prefix="cx" wrapper-namespace="http://xmlcalabash.com/ns/extensions"/>
-          
-          <p:add-attribute match="/cx:document" attribute-name="name" attribute-value="wrap-chunks" name="wrap-chunks"/>
-          
-          <tr:store-debug pipeline-step="epubcheck-transpect/html-chunks">
-            <p:with-option name="active" select="$debug"/>
-            <p:with-option name="base-uri" select="$debug-dir-uri"/>
-          </tr:store-debug>
-          
-          <p:sink/>
-          
-          <p:insert match="/c:wrap" position="first-child">
-            <p:input port="source">
-              <p:inline>
-                <c:wrap xmlns="http://www.w3.org/ns/xproc-step"/>
-              </p:inline>
-            </p:input>
-            <p:input port="insertion">
-              <p:pipe port="result" step="load-opf"/>
-              <p:pipe port="result" step="wrap-chunks"/>
-              <p:pipe port="result" step="load-ncx"/>
-              <p:pipe port="result" step="unzip"/>
-            </p:input>
-          </p:insert>
-          
-          <p:rename match="/c:wrap/c:files" new-name="c:zipfile"/>
-          
-          <tr:store-debug pipeline-step="epubcheck-transpect/wrap">
-            <p:with-option name="active" select="$debug"/>
-            <p:with-option name="base-uri" select="$debug-dir-uri"/>
-          </tr:store-debug>
-          
-        </p:group>
+        <p:wrap-sequence wrapper="document" wrapper-prefix="cx" wrapper-namespace="http://xmlcalabash.com/ns/extensions"/>
+        
+        <p:add-attribute match="/cx:document" attribute-name="name" attribute-value="wrap-chunks" name="wrap-chunks"/>
+        
+        <tr:store-debug pipeline-step="epubcheck-transpect/html-chunks">
+          <p:with-option name="active" select="$debug"/>
+          <p:with-option name="base-uri" select="$debug-dir-uri"/>
+        </tr:store-debug>
+        
+        <p:sink/>
+        
+        <p:insert match="/c:wrap" position="first-child">
+          <p:input port="source">
+            <p:inline>
+              <c:wrap xmlns="http://www.w3.org/ns/xproc-step"/>
+            </p:inline>
+          </p:input>
+          <p:input port="insertion">
+            <p:pipe port="result" step="load-opf"/>
+            <p:pipe port="result" step="wrap-chunks"/>
+            <p:pipe port="result" step="load-ncx"/>
+            <p:pipe port="result" step="unzip"/>
+          </p:input>
+        </p:insert>
+        
+        <p:rename match="/c:wrap/c:files" new-name="c:zipfile"/>
+        
+        <tr:store-debug pipeline-step="epubcheck-transpect/wrap">
+          <p:with-option name="active" select="$debug"/>
+          <p:with-option name="base-uri" select="$debug-dir-uri"/>
+        </tr:store-debug>
+        
       </p:group>      
      
     </p:group>
     <p:catch name="catch">
+      <p:output port="result" primary="true"/>
+      <p:output port="report" primary="false" sequence="true">
+        <p:pipe port="result" step="forward-error"/>
+      </p:output>
       
-      <p:identity>
+      <p:identity name="identity">
         <p:input port="source">
           <p:pipe port="error" step="catch"/>
         </p:input>
       </p:identity>
+      
+      <p:add-attribute attribute-name="tr:step-name" attribute-value="file-load" match="/c:errors"/>
+      
+      <p:add-attribute attribute-name="tr:rule-family" attribute-value="file-load" match="/c:errors" name="forward-error"/>
       
     </p:catch>
   </p:try>

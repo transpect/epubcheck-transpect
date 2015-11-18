@@ -101,7 +101,8 @@
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl"/>
   
   <p:import href="epubcheck-file-iteration.xpl"/>
-  <!--<p:import href="epubcheck-validate.xpl"/>-->
+  <p:import href="epubcheck-validate.xpl"/>
+  <p:import href="epubcheck-htmlreport.xpl"/>
   
   <tr:store-debug pipeline-step="epubcheck-transpect/param-set-original">
     <p:with-option name="active" select="$debug"/>
@@ -144,13 +145,26 @@
     <p:with-option name="status-dir-uri" select="$status-dir-uri"/>
   </epubcheck:file-iteration>
   
-  <!--<epubcheck:validate name="validate">
+  <epubcheck:validate name="validate">
     <p:input port="params">
       <p:pipe port="result" step="resolve-params"/>
     </p:input>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
-  </epubcheck:validate>-->
+  </epubcheck:validate>
+  
+  <epubcheck:htmlreport name="report">
+    <p:input port="reports">
+      <p:pipe port="report" step="validate"/>
+    </p:input>
+    <p:input port="params">
+      <p:pipe port="result" step="resolve-params"/>
+    </p:input>
+    <p:with-option name="severity-default-name" select="$severity-default-name"/>
+    <p:with-option name="debug" select="$debug"/>
+    <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
+    <p:with-option name="status-dir-uri" select="$status-dir-uri"/>    
+  </epubcheck:htmlreport>
   
 </p:declare-step>
