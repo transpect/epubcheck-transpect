@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <c:param-set xmlns:c="http://www.w3.org/ns/xproc-step">
-  <c:param name="multiple-html-input" value="yes"/>
   <c:param name="html-max-kb" value="300"/>
   <c:param name="image-max-mb" value="1.5"/>
   <c:param name="result-max-mb" value="20"/>
