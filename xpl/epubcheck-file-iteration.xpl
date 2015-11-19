@@ -27,7 +27,8 @@
   <p:import href="http://transpect.io/xproc-util/load/xpl/load.xpl"/>
   <p:import href="http://transpect.io/xproc-util/simple-progress-msg/xpl/simple-progress-msg.xpl"/>
   <p:import href="http://transpect.io/xproc-util/store-debug/xpl/store-debug.xpl"/>
-  
+  <p:import href="http://transpect.io/xproc-util/xml-model/xpl/prepend-xml-model.xpl"/>
+
   <p:import href="epubcheck-load-html.xpl"/>
   
   <p:try name="try">
@@ -74,12 +75,48 @@
         <p:variable name="base-uri" select="/c:files/@xml:base"/>
         <p:variable name="container-xml" select="/c:files/c:file[@name eq 'META-INF/container.xml']/@name"/>
         
+        <!-- generate file list -->
+        
+        <p:xslt name="generate-opf-file-representation">
+          <p:input port="stylesheet">
+            <p:document href="../xsl/epubcheck-opf-file-representation.xsl"/>
+          </p:input>
+          <p:input port="parameters">
+            <p:empty/>
+          </p:input>
+        </p:xslt>
+        
+        <tr:store-debug pipeline-step="epubcheck-file-iteration/files">
+          <p:with-option name="active" select="$debug"/>
+          <p:with-option name="base-uri" select="$debug-dir-uri"/>
+        </tr:store-debug>
+        
+        <p:viewport match="//c:file[@href][matches(@href, '(jpg|png|svg)$', 'i')]" name="image-viewport">
+          
+          <cx:message>
+            <p:with-option name="message" select="'[info] analyze image: ', c:file/@oebps-name"/>
+          </cx:message>
+          
+          <tr:image-identify name="image-identify">
+            <p:with-option name="href" select="c:file/@href"/>
+          </tr:image-identify>
+          
+          <p:insert match="c:file" position="first-child">
+            <p:input port="insertion">
+              <p:pipe port="report" step="image-identify"/>
+            </p:input>
+          </p:insert>
+          
+        </p:viewport>
+
         <!-- load META-INF/container.xml to retrieve the path of the OPF file -->
         
         <cx:message>
           <p:with-option name="message" select="'[info] load Container-XML: ', $container-xml"/>
         </cx:message>
-        
+
+        <p:sink/>
+
         <tr:load fail-on-error="true" name="load-container-xml">
           <p:with-option name="href" select="replace(concat($base-uri, $container-xml), '%2F', '/')"/>
         </tr:load>
@@ -103,35 +140,6 @@
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
-        
-        <!-- generate OPF file representation -->
-        
-        <p:xslt name="generate-opf-file-representation">
-          <p:input port="stylesheet">
-            <p:document href="../xsl/epubcheck-opf-file-representation.xsl"/>
-          </p:input>
-          <p:input port="parameters">
-            <p:empty/>
-          </p:input>
-        </p:xslt>
-        
-        <p:viewport match="//c:file[@href][matches(@href, '(jpg|png|svg)$', 'i')]" name="image-viewport">
-          
-          <cx:message>
-            <p:with-option name="message" select="'[info] analyze image: ', c:file/@oebps-name"/>
-          </cx:message>
-          
-          <tr:image-identify name="image-identify">
-            <p:with-option name="href" select="c:file/@href"/>
-          </tr:image-identify>
-          
-          <p:insert match="c:file" position="first-child">
-            <p:input port="insertion">
-              <p:pipe port="report" step="image-identify"/>
-            </p:input>
-          </p:insert>
-          
-        </p:viewport>
         
         <!-- load NCX file if exists -->
           
@@ -215,7 +223,18 @@
         </p:insert>
         
         <p:rename match="/c:wrap/c:files" new-name="c:zipfile"/>
-        
+
+        <tr:prepend-xml-model name="prepend-schematron-model">
+          <p:input port="models">
+            <p:inline>
+              <c:models>
+                <c:model href="http://transpect.io/epubtools/schematron/epub.sch.xml" type="application/xml" 
+                         schematypens="http://purl.oclc.org/dsdl/schematron"/>
+              </c:models>
+            </p:inline>
+          </p:input>
+        </tr:prepend-xml-model>
+
         <tr:store-debug pipeline-step="epubcheck-file-iteration/wrap">
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
