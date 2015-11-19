@@ -59,9 +59,7 @@
         <p:input port="stylesheet">
           <p:document href="../xsl/epubcheck-params-to-checks.xsl"/>
         </p:input>
-        <p:input port="parameters">
-          <p:empty/>
-        </p:input>
+        <p:with-param name="severity-default-name" select="$severity-default-name"/>
       </p:xslt>
       
       <cx:message>
