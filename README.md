@@ -22,7 +22,7 @@ In the directory that the checkout created:
 ```
 Invocation without arguments will show you the options.
 
-For direct invocation of calabash, please look at how it is invoked in the [epubcheck-transpect](epubcheck-transpect) script. For Windows, you can 
+For direct invocation of calabash, please look at how it is invoked in the [epubcheck-transpect](epubcheck-transpect) script. For Windows, until we provide an `epubcheck-transpect.bat` file, you can use this calabash invocation with `calabash\calabash.bat` instead of `calabash/calabash.sh`.
 
 # Customization
 
