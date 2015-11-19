@@ -2,6 +2,7 @@
 <p:declare-step xmlns:p="http://www.w3.org/ns/xproc"
   xmlns:c="http://www.w3.org/ns/xproc-step" 
   xmlns:cx="http://xmlcalabash.com/ns/extensions"
+  xmlns:cxf="http://xmlcalabash.com/ns/extensions/fileutils"
   xmlns:tr="http://transpect.io"
   xmlns:epubcheck="http://transpect.io/epubcheck"
   version="1.0"
@@ -32,6 +33,10 @@
 
   <p:import href="epubcheck-load-html.xpl"/>
   
+  <tr:file-uri name="zip-uri">
+    <p:with-option name="filename" select="$file"/>
+  </tr:file-uri>
+  
   <p:try name="try">
     <p:group>
       <p:output port="result" primary="true"/>
@@ -40,6 +45,7 @@
       </p:output>
       
       <p:variable name="dest-dir" select="concat(replace($file, '^(.+)/.+$', '$1/'), 'archive')"/>
+      <p:variable name="zip-uri" select="/*/@local-href"/>
       
       <tr:simple-progress-msg file="epubcheck-transpect_extract.txt">
         <p:input port="msgs">
@@ -73,6 +79,19 @@
         <p:with-option name="overwrite" select="'yes'"/>
       </tr:unzip>
       
+      <cxf:info fail-on-error="false" name="zip-info">
+        <p:with-option name="href" select="$zip-uri"/>
+      </cxf:info>
+      <p:sink/>
+      <p:set-attributes match="/*" name="add-zip-info">
+        <p:input port="source">
+          <p:pipe port="result" step="unzip"/>
+        </p:input>
+        <p:input port="attributes">
+          <p:pipe port="result" step="zip-info"/>
+        </p:input>
+      </p:set-attributes>
+      
       <tr:store-debug pipeline-step="epubcheck-file-iteration/archive">
         <p:with-option name="active" select="$debug"/>
         <p:with-option name="base-uri" select="$debug-dir-uri"/>
@@ -102,6 +121,24 @@
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
         
+        <p:viewport match="c:file" name="file-size">
+          <p:output port="result" primary="true"/>
+          <cxf:info fail-on-error="false" name="file-info">
+            <p:with-option name="href" select="/*/@target-filename">
+              <p:pipe port="current" step="file-size"/>
+            </p:with-option>
+          </cxf:info>
+          <p:sink/>
+          <p:set-attributes match="/*">
+            <p:input port="source">
+              <p:pipe port="current" step="file-size"/>
+            </p:input>
+            <p:input port="attributes">
+              <p:pipe port="result" step="file-info"/>
+            </p:input>
+          </p:set-attributes>
+        </p:viewport>
+
         <p:viewport match="//c:file[@href][matches(@href, '(jpg|png|svg)$', 'i')]" name="image-viewport">
           
           <cx:message>
@@ -230,7 +267,7 @@
             <p:pipe port="result" step="image-viewport"/>
             <p:pipe port="result" step="wrap-chunks"/>
             <p:pipe port="result" step="load-ncx"/>
-            <p:pipe port="result" step="unzip"/>
+            <p:pipe port="result" step="add-zip-info"/>
           </p:input>
         </p:insert>
         
