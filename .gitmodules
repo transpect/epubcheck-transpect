@@ -25,3 +25,9 @@
 [submodule "kindlegen-amzn"]
 	path = kindlegen-amzn
 	url = https://github.com/transpect/kindlegen-amzn
+[submodule "epubtools"]
+	path = epubtools
+	url = https://github.com/transpect/epubtools
+[submodule "htmlreports"]
+	path = htmlreports
+	url = https://github.com/transpect/htmlreports
