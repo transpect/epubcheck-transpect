@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">
+<schema xmlns="http://purl.oclc.org/dsdl/schematron" 
+  xmlns:tr="http://transpect.io"
+  queryBinding="xslt2"
+  tr:rule-family="business-rules">
   
   <ns prefix="c" uri="http://www.w3.org/ns/xproc-step"/>
   <ns prefix="cx" uri="http://www.w3.org/1999/xhtml"/>
