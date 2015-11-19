@@ -105,58 +105,6 @@
         <p:variable name="base-uri" select="/c:files/@xml:base"/>
         <p:variable name="container-xml" select="/c:files/c:file[@name eq 'META-INF/container.xml']/@name"/>
         
-        <!-- generate file list -->
-        
-        <p:xslt name="generate-opf-file-representation">
-          <p:input port="stylesheet">
-            <p:document href="../xsl/epubcheck-opf-file-representation.xsl"/>
-          </p:input>
-          <p:input port="parameters">
-            <p:empty/>
-          </p:input>
-        </p:xslt>
-        
-        <tr:store-debug pipeline-step="epubcheck-file-iteration/files">
-          <p:with-option name="active" select="$debug"/>
-          <p:with-option name="base-uri" select="$debug-dir-uri"/>
-        </tr:store-debug>
-        
-        <p:viewport match="c:file" name="file-size">
-          <p:output port="result" primary="true"/>
-          <cxf:info fail-on-error="false" name="file-info">
-            <p:with-option name="href" select="/*/@target-filename">
-              <p:pipe port="current" step="file-size"/>
-            </p:with-option>
-          </cxf:info>
-          <p:sink/>
-          <p:set-attributes match="/*">
-            <p:input port="source">
-              <p:pipe port="current" step="file-size"/>
-            </p:input>
-            <p:input port="attributes">
-              <p:pipe port="result" step="file-info"/>
-            </p:input>
-          </p:set-attributes>
-        </p:viewport>
-
-        <p:viewport match="//c:file[@href][matches(@href, '(jpg|png|svg)$', 'i')]" name="image-viewport">
-          
-          <cx:message>
-            <p:with-option name="message" select="'[info] analyze image: ', c:file/@oebps-name"/>
-          </cx:message>
-          
-          <tr:image-identify name="image-identify">
-            <p:with-option name="href" select="c:file/@href"/>
-          </tr:image-identify>
-          
-          <p:insert match="c:file" position="first-child">
-            <p:input port="insertion">
-              <p:pipe port="report" step="image-identify"/>
-            </p:input>
-          </p:insert>
-          
-        </p:viewport>
-
         <!-- load META-INF/container.xml to retrieve the path of the OPF file -->
         
         <cx:message>
@@ -181,6 +129,7 @@
         </cx:message>
         
         <tr:load fail-on-error="true" name="load-opf">
+          <p:documentation>Multiple root files to be supported yet.</p:documentation>
           <p:with-option name="href" select="replace(concat($base-uri, /*:container/*:rootfiles[1]/*:rootfile[1]/@full-path), '%2F', '/')"/>
         </tr:load>
         
@@ -188,7 +137,70 @@
           <p:with-option name="active" select="$debug"/>
           <p:with-option name="base-uri" select="$debug-dir-uri"/>
         </tr:store-debug>
+
+        <!-- generate file list -->
         
+        <p:sink/>
+        
+        <p:xslt name="generate-opf-file-representation">
+          <p:input port="source">
+            <p:pipe port="result" step="add-zip-info"/>
+            <p:pipe port="result" step="load-opf"/>
+          </p:input>
+          <p:input port="stylesheet">
+            <p:document href="../xsl/epubcheck-opf-file-representation.xsl"/>
+          </p:input>
+          <p:input port="parameters">
+            <p:empty/>
+          </p:input>
+        </p:xslt>
+        
+        <p:viewport match="c:file" name="file-size">
+          <p:output port="result" primary="true"/>
+          <cxf:info fail-on-error="false" name="file-info">
+            <p:with-option name="href" select="/*/@target-filename">
+              <p:pipe port="current" step="file-size"/>
+            </p:with-option>
+          </cxf:info>
+          <p:sink/>
+          <p:set-attributes match="/*">
+            <p:input port="source">
+              <p:pipe port="current" step="file-size"/>
+            </p:input>
+            <p:input port="attributes">
+              <p:pipe port="result" step="file-info"/>
+            </p:input>
+          </p:set-attributes>
+        </p:viewport>
+
+        <tr:store-debug pipeline-step="epubcheck-file-iteration/files">
+          <p:with-option name="active" select="$debug"/>
+          <p:with-option name="base-uri" select="$debug-dir-uri"/>
+        </tr:store-debug>
+        
+        <p:viewport match="//c:file[matches(@media-type, '^image/(gif|jpeg|png)')]" name="image-viewport">
+          
+          <cx:message>
+            <p:with-option name="message" select="'[info] analyze image: ', c:file/@oebps-name"/>
+          </cx:message>
+          
+          <tr:image-identify name="image-identify">
+            <p:with-option name="href" select="c:file/@href"/>
+          </tr:image-identify>
+          
+          <p:sink/>
+          
+          <p:insert match="c:file" position="first-child">
+            <p:input port="source">
+              <p:pipe port="current" step="image-viewport"/>
+            </p:input>
+            <p:input port="insertion">
+              <p:pipe port="report" step="image-identify"/>
+            </p:input>
+          </p:insert>
+          
+        </p:viewport>
+
         <!-- load NCX file if exists -->
           
         <cx:message cx:depends-on="load-opf">
