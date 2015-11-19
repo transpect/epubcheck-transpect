@@ -10,6 +10,7 @@
   <nextCatalog catalog="../epubtools/xmlcatalog/catalog.xml"/>
   <nextCatalog catalog="../htmlreports/xmlcatalog/catalog.xml"/>
   <nextCatalog catalog="../kindlegen-amzn/xmlcatalog/catalog.xml"/>
+  <nextCatalog catalog="../schema/ncx/xmlcatalog/catalog.xml"/>
   <nextCatalog catalog="../schema-html/xmlcatalog/catalog.xml"/>
   <nextCatalog catalog="../schematron/xmlcatalog/catalog.xml"/>
   <nextCatalog catalog="../xproc-util/xmlcatalog/catalog.xml"/>

@@ -12,6 +12,7 @@ function usage {
     echo "Usage: epubcheck-transpect [options ...] {epub file}"
     echo ""
     echo "Options:"
+    echo "   -s {value}  custom schematron file"
     echo "   -o {value}  custom output path"
     echo "   -p {value}  profile"
     echo "   -s {value}  default warning severity"
@@ -48,8 +49,11 @@ TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
 SEVERITY=error
 
 # specify options
-while getopts "o:p:s:d" opt; do
+while getopts "s:o:p:s:d" opt; do
     case "${opt}" in
+	s)
+	    SCHEMATRON=${OPTARG}
+	    ;;
 	o)
 	    OUT_DIR=${OPTARG}
 	    ;;
@@ -88,6 +92,9 @@ BASENAME="$(basename $FILE .epub)"
 if [ -z $OUT_DIR ]; then
     OUT_DIR="$(real_dir "$FILE" )"/$BASENAME
 fi
+if [ -z $SCHEMATRON ]; then
+    SCHEMATRON=$DIR/example/example.sch
+fi
 
 # temp dir
 TMP_DIR=$OUT_DIR/$BASENAME.tmp
@@ -123,7 +130,8 @@ if $cygwin; then
     if [ -n "$META" ]; then
 	META=$(cygpath -ma "$META")
     fi
-    OUT_DIR=$(cygpath -ma "$OUT_DIR")    
+    OUT_DIR=$(cygpath -ma "$OUT_DIR")
+    SCHEMATRON=$(cygpath -ma "$SCHEMATRON")
     DEBUG_DIR_URI=file:/$(cygpath -ma "$DEBUG_DIR" )
 else
     if [ -n "$META" ]; then
@@ -151,6 +159,7 @@ echo invoke epubcheck-transpect > $DEBUG_DIR/status/00_epubcheck-transpect_start
 
 cd $DIR && $CALABASH \
     -i params=$DIR/config/params.xml \
+    -i schematron=$SCHEMATRON \
     -o result=$OUT_DIR/$BASENAME.xhtml \
     $DIR/xpl/epubcheck-transpect.xpl \
     file=$FILE_CP \

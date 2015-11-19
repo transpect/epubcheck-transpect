@@ -13,15 +13,9 @@
 [submodule "css-tools"]
 	path = css-tools
 	url = https://github.com/transpect/css-tools
-[submodule "htmlreports"]
-	path = htmlreports
-	url = https://github.com/transpect/htmlreports
 [submodule "cascade"]
 	path = cascade
 	url = https://github.com/transpect/cascade
-[submodule "epubtools"]
-	path = epubtools
-	url = https://github.com/transpect/epubtools
 [submodule "schematron"]
 	path = schematron
 	url = https://github.com/transpect/schematron
@@ -31,3 +25,9 @@
 [submodule "kindlegen-amzn"]
 	path = kindlegen-amzn
 	url = https://github.com/transpect/kindlegen-amzn
+[submodule "epubtools"]
+	path = epubtools
+	url = https://github.com/transpect/epubtools
+[submodule "htmlreports"]
+	path = htmlreports
+	url = https://github.com/transpect/htmlreports
