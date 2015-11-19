@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+
+  <group prefer="public">
+    <public publicId="-//NISO//DTD ncx 2005-1//EN" uri="../dtd/ncx-2005-1.dtd"/>
+    <system systemId="http://www.daisy.org/z3986/2005/ncx-2005-1.dtd" uri="../dtd/ncx-2005-1.dtd"/>
+  </group>  
+  
+</catalog>
