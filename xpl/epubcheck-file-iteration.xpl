@@ -17,6 +17,7 @@
   </p:output>
   
   <p:option name="file" required="true"/>
+  <p:option name="severity-default-name" select="'warning'"/>
   <p:option name="debug" select="'yes'"/>
   <p:option name="debug-dir-uri" select="'debug'"/>  
   <p:option name="status-dir-uri" select="concat($debug-dir-uri, '/status')"/>
@@ -50,6 +51,18 @@
         </p:input>
         <p:with-option name="status-dir-uri" select="$status-dir-uri"/>
       </tr:simple-progress-msg>
+      
+      <p:xslt name="generate-epubconfig">
+        <p:input port="source">
+          <p:pipe port="params" step="file-iteration"/>
+        </p:input>
+        <p:input port="stylesheet">
+          <p:document href="../xsl/epubcheck-params-to-checks.xsl"/>
+        </p:input>
+        <p:input port="parameters">
+          <p:empty/>
+        </p:input>
+      </p:xslt>
       
       <cx:message>
         <p:with-option name="message" select="'[info] unzip: ', $file, ' &#xa; => ', $dest-dir"/>
@@ -206,6 +219,7 @@
             </p:inline>
           </p:input>
           <p:input port="insertion">
+            <p:pipe port="result" step="generate-epubconfig"/>
             <p:pipe port="result" step="load-opf"/>
             <p:pipe port="result" step="image-viewport"/>
             <p:pipe port="result" step="wrap-chunks"/>
@@ -237,7 +251,7 @@
       </p:identity>
       
       <cx:message>
-        <p:with-option name="message" select="'[ERROR] EPUB file iteration failed!', /c:errors"/>
+        <p:with-option name="message" select="'[ERROR] EPUB file iteration failed! &#xa;', /c:errors"/>
       </cx:message>
       
       <p:add-attribute attribute-name="tr:step-name" attribute-value="file-load" match="/c:errors"/>
