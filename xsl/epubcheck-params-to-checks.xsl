@@ -16,7 +16,14 @@
   </xsl:template>
   
   <xsl:template match="c:param">
-    <check param="{@name}" value="{@value}" severity="{$severity-default-name}"/>
+    <check value="{@value}">
+      <xsl:analyze-string select="@name" regex="^(.+?)(_(error|fatal-error|info|warning))?$">
+        <xsl:matching-substring>
+          <xsl:attribute name="param" select="regex-group(1)"/>
+          <xsl:attribute name="severity" select="(regex-group(3), $severity-default-name)[1]"/>
+        </xsl:matching-substring>
+      </xsl:analyze-string>  
+    </check>
   </xsl:template>
   
 </xsl:stylesheet>
