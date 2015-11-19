@@ -144,6 +144,7 @@
     <p:with-option name="file" select="/c:result/@os-path">
       <p:pipe port="result" step="normalize-filename"/>
     </p:with-option>
+    <p:with-option name="severity-default-name" select="$severity-default-name"/>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
     <p:with-option name="status-dir-uri" select="$status-dir-uri"/>
