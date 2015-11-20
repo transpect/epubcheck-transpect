@@ -71,16 +71,27 @@
       <p:input port="source">
         <p:pipe port="report" step="oxy-schematron"/>
       </p:input>
-      <p:with-option name="attribute-value" select="(/*/@tr:rule-family, replace( base-uri(/*), '^.+/(.+)\.+$', '$1') )[1]">
+      <p:with-option name="attribute-value" select="(/*/@tr:rule-family, replace( base-uri(/*), '^.+/(.+)\..+$', '$1') )[1]">
         <p:pipe port="current" step="schematron-iteration"/>
       </p:with-option>
     </p:add-attribute>
     
     <p:add-attribute match="/*" attribute-name="tr:step-name" name="a2">
-      <p:with-option name="attribute-value" select="(/*/@tr:step-name, replace( base-uri(/*), '^.+/(.+)\.+$', '$1') )[1]">
+      <p:with-option name="attribute-value" select="(/*/@tr:step-name, replace( base-uri(/*), '^.+/(.+)\..+$', '$1') )[1]">
         <p:pipe port="current" step="schematron-iteration"/>
       </p:with-option>
     </p:add-attribute>
+    
+    <tr:store-debug>
+      <p:with-option name="pipeline-step" 
+        select="concat('epubcheck-validate/svrl_',
+                        (/*/@tr:step-name, replace( base-uri(/*), '^.+/(.+)\..+?$', '$1') )[1]
+                      )">
+        <p:pipe port="current" step="schematron-iteration"/>
+      </p:with-option>
+      <p:with-option name="active" select="$debug"/>
+      <p:with-option name="base-uri" select="$debug-dir-uri"/>
+    </tr:store-debug>
     
   </p:for-each>
   
