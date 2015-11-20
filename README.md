@@ -26,6 +26,12 @@ For direct invocation of calabash, please look at how it is invoked in the [epub
 
 # Customization
 
+## Parameter Set
+
 The parameters for image size checking etc. are in [config/params.xml](config/params.xml). We will provide an option to supply another parameter file. 
 
-There will also be an option to run your own Schematron in addition to the [one that is bundled](https://github.com/transpect/epubtools/blob/master/schematron/epub.sch.xml). In order to find out what the input for Schematron looks like, invoke the check with `-d`, the debug switch. You’ll find a file `debug/epubcheck-validate/wrap-with-srcpaths.xml` in the debug directory that the script will tell you. This file also has an `<?xml-model?>` processing instruction that points to the canonical URL of the Schematron file. If you are using oXygen XML Editor and if you have opened the project [epubcheck-transpect.xpr](epubcheck-transpect.xpr), you will be able to perform the bundled Schematron check on this wrapper file. You can add an additional Schematron schema association that points to your custom Schematron.
+## Custom Schematron
+
+There will also be an option to run your own Schematron in addition to the [one that is bundled](https://github.com/transpect/epubtools/blob/master/schematron/epub.sch.xml). Run epubcheck-transpect with `-s` switch and add the path to your own Schematron file. The file `example/example.sch` provides an example. You may extend it for your needs.
+
+Schematron files are always applied to an XML representation of the EPUB file. In order to find out what the input for Schematron looks like, invoke the check with `-d`, the debug switch. You’ll find a file `debug/epubcheck-validate/wrap-with-srcpaths.xml` in the debug directory that the script will tell you. This file also has an `<?xml-model?>` processing instruction that points to the canonical URL of the Schematron file. If you are using oXygen XML Editor and if you have opened the project [epubcheck-transpect.xpr](epubcheck-transpect.xpr), you will be able to perform the bundled Schematron check on this wrapper file. You can add an additional Schematron schema association that points to your custom Schematron.
