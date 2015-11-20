@@ -65,7 +65,7 @@
     <p:input port="params">
       <p:pipe port="params" step="htmlreport"/>
     </p:input>
-    <!--<p:with-option name="report-title" select="replace($htmlreport, '^.+/(.+)\..+$', '$1')"/>-->
+    <p:with-option name="report-title" select="'epubcheck'"/>
     <p:with-option name="show-adjusted-srcpath" select="'yes'"/>
     <p:with-option name="show-step-name" select="'no'"/>
     <p:with-option name="severity-default-name" select="$severity-default-name"/>
