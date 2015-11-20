@@ -9,7 +9,7 @@ XProc pipeline to EPUBs for compliance to IDPF EPUB2/3, Amazon MOBI/KF8 and reta
 ## Installation
 
 ```
-git clone git@github.com:transpect/epubcheck-transpect.git --recursive
+git clone https://github.com/transpect/epubcheck-transpect.git --recursive
 ```
 
 If you want to see kindlegen errors, you’d have to get [kindlegen](http://www.amazon.com/gp/feature.html?docId=1000765211) and copy the kindlegen binary to `infrastructure/kindlegen/i386/kindlegen` (for Linux), `infrastructure/kindlegen/i386/macos/kindlegen` (for Mac OS), or `infrastructure/kindlegen/i386/kindlegen.exe` (for Windows). You’ll have to create the directory beforehand.
