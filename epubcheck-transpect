@@ -87,6 +87,7 @@ FILE="$1"
 
 # basename
 BASENAME="$(basename $FILE .epub)"
+BASENAME="${BASENAME:0:16}"
 
 # output directory
 if [ -z $OUT_DIR ]; then
@@ -120,8 +121,8 @@ mkdir -p $OUT_DIR $TMP_DIR $DEBUG_DIR $DEBUG_DIR/status || exitonerror $? "creat
 echo "start epubcheck-transpect" >> $LOG
 
 # copy file into temp dir
-FILE_CP=$TMP_DIR/$(basename $FILE)
-cp $FILE $TMP_DIR 2>&1 2>>$LOG || exitonerror $? "copy file into temp dir"
+FILE_CP=$TMP_DIR/$BASENAME.epub
+cp $FILE $FILE_CP 2>&1 2>>$LOG || exitonerror $? "copy file into temp dir"
 
 # make absolute paths
 if $cygwin; then
@@ -156,6 +157,7 @@ if [ "$DEBUG" = "yes" ]; then
 fi
 
 echo invoke epubcheck-transpect > $DEBUG_DIR/status/00_epubcheck-transpect_start.txt
+
 
 cd $DIR && $CALABASH \
     -i params=$DIR/config/params.xml \
