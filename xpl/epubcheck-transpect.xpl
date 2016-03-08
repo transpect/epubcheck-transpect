@@ -17,8 +17,6 @@
   <!--  *
         * port declarations
         * -->
-  <p:documentation xmlns="http://www.w3.org/1999/xhtml"><h2>Ports</h2></p:documentation>
-  
   <p:input port="params" primary="true">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
       <dl><dt>params</dt><dd>expects a c:param-set document</dd></dl></p:documentation>
@@ -38,9 +36,6 @@
   <!--  *
         * options
         * -->
-  <p:documentation xmlns="http://www.w3.org/1999/xhtml">
-    <h2>Options</h2>
-  </p:documentation>
   
   <p:option name="file" required="true">
     <p:documentation xmlns="http://www.w3.org/1999/xhtml">
