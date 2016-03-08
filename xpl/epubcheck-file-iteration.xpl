@@ -8,6 +8,11 @@
   version="1.0"
   name="file-iteration"
   type="epubcheck:file-iteration">
+
+  <p:documentation>
+    This step is used to unzip the EPUB and to generate an
+    XML representation of the EPUB package.  
+  </p:documentation>
   
   <p:input port="source" primary="true"/>
   <p:input port="params" primary="false"/>

@@ -9,6 +9,11 @@
   version="1.0"
   name="htmlreport"
   type="epubcheck:htmlreport">
+
+  <p:documentation>
+    Takes the SVRL results and the HTML files and provide
+    a HTML report of the EPUB package.
+  </p:documentation>
   
   <p:input port="source" primary="true"/>
   <p:input port="reports" primary="false" sequence="true"/>

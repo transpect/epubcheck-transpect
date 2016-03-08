@@ -8,6 +8,11 @@
   version="1.0"
   name="validate"
   type="epubcheck:validate">
+
+  <p:documentation>
+    Validates the EPUB with Schematron and XProc wrappers for
+    IDPF epubcheck and Amazon KindleGen.
+  </p:documentation>
   
   <p:input port="source" primary="true"/>
   <p:input port="params" primary="false"/>

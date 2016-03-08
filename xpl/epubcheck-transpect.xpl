@@ -9,25 +9,9 @@
   type="epubcheck:transpect">
 
   <p:documentation xmlns="http://www.w3.org/1999/xhtml">
-    <h1>epubcheck-transpect</h1>
-    <p>checks EPUB for compatibility to IDPF EPUB, Amazon KF8/MOBI and various retailers</p>
-    <ol>
-      <li>
-        <i>Bash Script</i>
-        <pre>
-./epubcheck-transpect 9783110339406.epub</pre>
-      </li>
-      <li>
-        <i>XML Calabash</i>
-        <pre>
-./calabash/calabash.sh \
-  -o result=output/report.xml \
-  xpl/epubcheck-transpect.xpl \
-  file=9783110339406.epub
-        </pre>
-      </li>
-    </ol>
-    
+    Checks EPUB for compatibility to IDPF EPUB, Amazon KF8/MOBI
+    and various retailers. The can also use a custom Schematron file
+    which is applied to an XML representation of the EPUB package.
   </p:documentation>
 
   <!--  *

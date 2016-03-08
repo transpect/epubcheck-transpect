@@ -9,6 +9,10 @@
   version="1.0"
   name="load-html"
   type="epubcheck:load-html">
+
+  <p:documentation>
+    Loads the HTML files and parse their CSS style information. 
+  </p:documentation>
   
   <p:input port="source"/>
   <p:output port="result" primary="true"/>
