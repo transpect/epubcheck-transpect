@@ -2,6 +2,8 @@
 <p:declare-step xmlns:p="http://www.w3.org/ns/xproc"
   xmlns:c="http://www.w3.org/ns/xproc-step" 
   xmlns:cx="http://xmlcalabash.com/ns/extensions"
+  xmlns:opf="http://www.idpf.org/2007/opf"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
   xmlns:tr="http://transpect.io"
   xmlns:epubcheck="http://transpect.io/epubcheck"
   version="1.0"
@@ -151,6 +153,13 @@
     <p:input port="params">
       <p:pipe port="result" step="resolve-params"/>
     </p:input>
+    <p:with-option name="report-title" 
+                   select="concat('epubcheck: ', 
+                                  /c:wrap/opf:package/opf:metadata/dc:identifier, 
+                                  ', ', 
+                                  /c:wrap/opf:package/opf:metadata/dc:creator,
+                                  ': ',
+                                  /c:wrap/opf:package/opf:metadata/dc:title)"/>
     <p:with-option name="severity-default-name" select="$severity-default-name"/>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>

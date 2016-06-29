@@ -27,6 +27,8 @@
   
   <p:option name="severity-default-name" select="'error'"/>
   
+  <p:option name="report-title" select="'epubcheck'"/>
+  
   <p:import href="http://transpect.io/htmlreports/xpl/patch-svrl.xpl"/>
   <p:import href="http://transpect.io/xproc-util/html-embed-resources/xpl/html-embed-resources.xpl"/>
   
@@ -70,9 +72,8 @@
     <p:input port="params">
       <p:pipe port="params" step="htmlreport"/>
     </p:input>
-    <p:with-option name="report-title" select="'epubcheck'"/>
+    <p:with-option name="report-title" select="$report-title"/>
     <p:with-option name="show-adjusted-srcpath" select="'yes'"/>
-    <p:with-option name="show-step-name" select="'no'"/>
     <p:with-option name="severity-default-name" select="$severity-default-name"/>
     <p:with-option name="debug" select="$debug"/>
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/>
