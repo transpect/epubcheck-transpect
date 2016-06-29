@@ -1,5 +1,5 @@
 /* HTML report overrides */
-
-section.epubcheck.body{box-shadow: 2px 2px 5px #ddd; background-color: #fff; border-radius: 4px; padding: 15px; margin: 0 0 15px 0}
+#tr-content{background-color:#f8f8f8 !important}
+#BC_orphans{margin:0 !important}
+section.epubcheck.body{background-color: #fff; padding: 15px; margin: 0 0 15px 0}
 .epubcheck.filename {color:#64b5f6; font-family: 'Segoe UI', 'Calibri', Helvetica, Arial, sans-serif; }
-#tr-content{ box-shadow: none; background-color: inherit; border-radius:0; padding:0; }
