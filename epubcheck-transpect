@@ -78,16 +78,17 @@ while getopts "s:o:p:s:d" opt; do
 done
 shift $((OPTIND-1))
 # check if argument for file is set
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
     usage
 fi
 
 # file as 1st argument
-FILE="$1"
+
+FILE=$(echo "$1" | sed 's/[^a-z|0-9|.|-|_|/]/_/gi')
 
 # basename
-BASENAME="$(basename $FILE .epub)"
-BASENAME="${BASENAME:0:16}"
+BASENAME="$(basename $FILE)"
+BASENAME="${BASENAME:0:32}"
 
 # output directory
 if [ -z $OUT_DIR ]; then
@@ -122,7 +123,7 @@ echo "start epubcheck-transpect" >> $LOG
 
 # copy file into temp dir
 FILE_CP=$TMP_DIR/$BASENAME.epub
-cp $FILE $FILE_CP 2>&1 2>>$LOG || exitonerror $? "copy file into temp dir"
+cp "$1" "$FILE_CP" 2>&1 2>>$LOG || exitonerror $? "copy file into temp dir"
 
 # make absolute paths
 if $cygwin; then
@@ -143,7 +144,7 @@ else
 fi
 
 # check if file exists
-if [ ! -f $FILE ]; then
+if [ ! -f "$FILE_CP" ]; then
     exitonerror 2 "opening $FILE"
 fi
 
@@ -170,10 +171,9 @@ cd $DIR && $CALABASH \
     severity-default-name=$SEVERITY \
     debug=$DEBUG \
     debug-dir-uri=$DEBUG_DIR_URI \
-    status-dir-uri=$DEBUG_DIR_URI/status #2>&1 2>>$LOG \
-    #&& echo "output written to $OUT_DIR/$BASENAME.xml" \
-    #|| exitonerror $? "running sc-main"
+    status-dir-uri=$DEBUG_DIR_URI/status 2>&1 2>>$LOG \
+    && echo "Report written to $OUT_DIR/$BASENAME.xml" \
+    || exitonerror $? "running sc-main"
 
 echo epubcheck-transpect finished > $DEBUG_DIR/status/99_epubcheck-transpect_finished.txt
 
-echo "epubcheck-transpect finished"
