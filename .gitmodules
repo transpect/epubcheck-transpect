@@ -28,6 +28,3 @@
 [submodule "epubtools"]
 	path = epubtools
 	url = https://github.com/transpect/epubtools
-[submodule "htmlreports"]
-	path = htmlreports
-	url = https://github.com/transpect/htmlreports
